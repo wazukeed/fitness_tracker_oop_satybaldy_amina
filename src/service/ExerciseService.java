@@ -4,13 +4,15 @@ import exception.DuplicateResourceException;
 import exception.InvalidInputException;
 import exception.ResourceNotFoundException;
 import model.Exercise;
-import repository.ExerciseRepository;
-import repository.WorkoutRepository;
+import repository.ExerciseRepositoryImpl;
+import repository.WorkoutRepositoryImpl;
+import repository.interfaces.ExerciseRepository;
+import repository.interfaces.WorkoutRepository;
 
 public class ExerciseService {
 
-    private final ExerciseRepository exRepo = new ExerciseRepository();
-    private final WorkoutRepository workoutRepo = new WorkoutRepository();
+    private final ExerciseRepository exRepo = new ExerciseRepositoryImpl();
+    private final WorkoutRepository workoutRepo = new WorkoutRepositoryImpl();
 
     public int createExercise(Exercise e) {
         try {
@@ -18,11 +20,18 @@ public class ExerciseService {
         } catch (IllegalArgumentException ex) {
             throw new InvalidInputException(ex.getMessage());
         }
-        if (workoutRepo.getById(e.getWorkoutId()) == null) {
+
+        // FK check: workout must exist
+        try {
+            workoutRepo.findById(e.getWorkoutId());
+        } catch (ResourceNotFoundException rnfe) {
             throw new ResourceNotFoundException("Workout id=" + e.getWorkoutId() + " not found (FK)");
         }
+
+        // duplicate check: same exercise name inside same workout
         boolean duplicate = exRepo.getByWorkoutId(e.getWorkoutId()).stream()
                 .anyMatch(x -> x.getName().equalsIgnoreCase(e.getName()));
+
         if (duplicate) {
             throw new DuplicateResourceException("Exercise '" + e.getName() + "' already exists in workout " + e.getWorkoutId());
         }
@@ -31,7 +40,6 @@ public class ExerciseService {
     }
 
     public void deleteExercise(int id) {
-        boolean ok = exRepo.delete(id);
-        if (!ok) throw new ResourceNotFoundException("Exercise id=" + id + " not found");
+        exRepo.delete(id);
     }
 }

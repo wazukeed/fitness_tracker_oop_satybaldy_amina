@@ -23,10 +23,10 @@ public class StrengthWorkout extends Workout {
 
     @Override
     public String describe() {
-        return shortInfo() + " | type=  " + getWorkoutType()
-                + " | duration=" + getDurationMinutes()
-                + " | calories=" + getCaloriesBurned()
-                + " | sets= " + totalSets
+        return shortInfo()
+                + " | duration=" + durationMinutes
+                + " | calories=" + caloriesBurned
+                + " | sets=" + totalSets
                 + " | reps=" + totalReps
                 + " | exercises=" + exercises.size();
     }
@@ -38,10 +38,7 @@ public class StrengthWorkout extends Workout {
         if (totalReps <= 0) throw new IllegalArgumentException("Total reps must be > 0");
     }
 
-    public void addExercise(Exercise e) {
-        exercises.add(e);
-    }
-
+    public void addExercise(Exercise e) { exercises.add(e); }
     public List<Exercise> getExercises() { return exercises; }
 
     public int getTotalSets() { return totalSets; }

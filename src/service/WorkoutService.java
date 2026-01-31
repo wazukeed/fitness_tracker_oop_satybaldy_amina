@@ -1,63 +1,34 @@
 package service;
 
-import exception.DuplicateResourceException;
 import exception.InvalidInputException;
-import exception.ResourceNotFoundException;
 import model.Workout;
-import repository.WorkoutRepository;
+import repository.WorkoutRepositoryImpl;
+import repository.interfaces.WorkoutRepository;
 
 import java.util.List;
 
 public class WorkoutService {
 
-    private final WorkoutRepository repo = new WorkoutRepository();
+    private final WorkoutRepository workoutRepo = new WorkoutRepositoryImpl();
 
-    public int createWorkout(Workout w) {
-        // 1) validation
+    public int createWorkout(Workout workout) {
         try {
-            w.validate();
-        } catch (IllegalArgumentException e) {
-            throw new InvalidInputException(e.getMessage());
+            workout.validate();
+        } catch (IllegalArgumentException ex) {
+            throw new InvalidInputException(ex.getMessage());
         }
-
-        // 2) if name already exists -> UPDATE instead of throwing error
-        var existing = repo.getAll().stream()
-                .filter(x -> x.getName().equalsIgnoreCase(w.getName()))
-                .findFirst();
-
-        if (existing.isPresent()) {
-            int existingId = existing.get().getId();
-            repo.update(existingId, w);
-            return existingId; // returns id of updated workout
-        }
-
-        // 3) otherwise create new
-        return repo.create(w);
+        return workoutRepo.save(workout);
     }
 
     public List<Workout> getAll() {
-        return repo.getAll();
+        return workoutRepo.findAll();
     }
 
     public Workout getById(int id) {
-        Workout w = repo.getById(id);
-        if (w == null) throw new ResourceNotFoundException("Workout id=" + id + " not found");
-        return w;
-    }
-
-    public void update(int id, Workout w) {
-        try {
-            w.validate();
-        } catch (IllegalArgumentException e) {
-            throw new InvalidInputException(e.getMessage());
-        }
-
-        boolean ok = repo.update(id, w);
-        if (!ok) throw new ResourceNotFoundException("Workout id=" + id + " not found for update");
+        return workoutRepo.findById(id);
     }
 
     public void delete(int id) {
-        boolean ok = repo.delete(id);
-        if (!ok) throw new ResourceNotFoundException("Workout id=" + id + " not found for delete");
+        workoutRepo.delete(id);
     }
 }

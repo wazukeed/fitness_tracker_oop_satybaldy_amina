@@ -1,13 +1,14 @@
 package controller;
 
+import exception.DuplicateResourceException;
 import exception.InvalidInputException;
 import exception.ResourceNotFoundException;
 import model.CardioWorkout;
+import model.Exercise;
 import model.StrengthWorkout;
 import model.Workout;
-import model.Exercise;
-import service.WorkoutService;
 import service.ExerciseService;
+import service.WorkoutService;
 
 import java.util.List;
 import java.util.Scanner;
@@ -39,8 +40,9 @@ public class Main {
                     case 4 -> addExercise();
                     case 5 -> deleteWorkout();
                     case 0 -> System.exit(0);
+                    default -> System.out.println("Unknown option");
                 }
-            } catch (InvalidInputException | ResourceNotFoundException e) {
+            } catch (InvalidInputException | ResourceNotFoundException | DuplicateResourceException e) {
                 System.out.println("ERROR: " + e.getMessage());
             }
         }
@@ -95,6 +97,10 @@ public class Main {
 
     private static void listWorkouts() {
         List<Workout> list = workoutService.getAll();
+        if (list.isEmpty()) {
+            System.out.println("(empty)");
+            return;
+        }
         list.forEach(w -> System.out.println(w.describe()));
     }
 
@@ -115,5 +121,3 @@ public class Main {
         System.out.println("Workout deleted");
     }
 }
-
-

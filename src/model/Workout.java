@@ -1,8 +1,9 @@
 package model;
 
 public abstract class Workout extends BaseEntity implements Validatable {
-    private int durationMinutes;
-    private int caloriesBurned;
+
+    protected int durationMinutes;
+    protected int caloriesBurned;
 
     protected Workout(int id, String name, int durationMinutes, int caloriesBurned) {
         super(id, name);
@@ -10,24 +11,23 @@ public abstract class Workout extends BaseEntity implements Validatable {
         this.caloriesBurned = caloriesBurned;
     }
 
-    public abstract String getWorkoutType();
+    // чтобы repository знал тип
+    public abstract String getWorkoutType(); // "CARDIO" / "STRENGTH"
 
     @Override
     public String getEntityType() {
-        return "WORKOUT";
+        return getWorkoutType();
     }
 
     @Override
     public void validate() {
-        if (getName() == null || getName().trim().isEmpty()) {
-            throw new IllegalArgumentException("Workout name must not be empty");
-        }
-        if (durationMinutes <= 0 || durationMinutes > 300) {
-            throw new IllegalArgumentException("Duration must be 1..300 minutes");
+        if (durationMinutes <= 0) {
+            throw new IllegalArgumentException("Duration must be > 0");
         }
         if (caloriesBurned < 0) {
             throw new IllegalArgumentException("Calories must be >= 0");
         }
+        Validatable.requireNonBlank(getName(), "Name");
     }
 
     public int getDurationMinutes() { return durationMinutes; }

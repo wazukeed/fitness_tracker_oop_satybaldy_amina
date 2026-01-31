@@ -8,13 +8,9 @@ public class DatabaseConnection {
 
     private static final String URL = "jdbc:postgresql://localhost:5433/fitness_db";
     private static final String USER = "postgres";
-    private static final String PASSWORD = "aminatop1"; //
+    private static final String PASSWORD = "aminatop1";
 
-    public static Connection getConnection() {
-        try {
-            return DriverManager.getConnection(URL, USER, PASSWORD);
-        } catch (SQLException e) {
-            throw new RuntimeException("Database connection failed: " + e.getMessage());
-        }
+    public static Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(URL, USER, PASSWORD);
     }
 }

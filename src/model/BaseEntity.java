@@ -23,9 +23,8 @@ public abstract class BaseEntity {
 
     public String getName() { return name; }
     public void setName(String name) {
-        if (name == null || name.trim().isEmpty()) {
-            throw new IllegalArgumentException("Name must not be empty");
-        }
+        Validatable.requireNonBlank(name, "Name");
         this.name = name.trim();
     }
 }
+

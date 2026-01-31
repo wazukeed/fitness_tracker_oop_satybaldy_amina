@@ -15,10 +15,10 @@ public class CardioWorkout extends Workout {
 
     @Override
     public String describe() {
-        return shortInfo() + " | type= " + getWorkoutType()
-                + " | duration= " + getDurationMinutes()
-                + " | calories= " + getCaloriesBurned()
-                + " | distanceKm= " + distanceKm;
+        return shortInfo()
+                + " | duration=" + durationMinutes
+                + " | calories=" + caloriesBurned
+                + " | distanceKm=" + distanceKm;
     }
 
     @Override
