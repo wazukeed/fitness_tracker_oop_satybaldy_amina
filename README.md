@@ -2,238 +2,199 @@ README
 
 A. Project Overview
 
+
 •Purpose of the API
-
-	This project is a console-based Fitness Tracker API that allows users to manage
-	workouts and exercises using a layered Java architecture and a PostgreSQL database 
-	through JDBC.
-
-	The system supports:
-
-		•creating workouts (Cardio / Strength)
-		•listing workouts
-		•adding exercises to workouts
-		•deleting workouts
-		•validation + error handling using custom exceptions
 	
-•Summary of Entities and Their Relationships
+		This project is a console-based Fitness Tracker API that allows users to manage
+		workouts and exercises using a structured, multi-layer Java architecture and a 
+		PostgreSQL database through JDBC.
+	
+		The system supports:
+			•Creating workouts (Cardio / Strength)
+			•Listing workouts
+			•Adding exercises to workouts
+			•Deleting workouts
+			•Input validation and error handling using custom exceptions
 
-	Entities:
-		•Workout — base workout entity stored in DB
+•Technologies Used
+	
+		•Java
+		•JDBC
+		•PostgreSQL
+		•OOP (Inheritance, Interfaces, Polymorphism, Composition)
+		•SOLID Principles
+		•IntelliJ IDEA
+		
+•Summary of Entities and Relationships
+	
+		•Entities:
+		•Workout — base workout entity
 		•CardioWorkout — workout with distance (km)
-		•StrengthWorkout — workout with sets/reps and exercises count
-		•Exercise — an exercise attached to a workout
-		
-	Relationship:
-	
-		•One Workout can have many Exercises (Workout 1 -> * Exercise)
-		•Each Exercise must reference an existing workout via workout_id (FK).
-		
-•OOP Design Overview (Layers)
-
-	The program follows a multi-layer structure:
-		controller: Main.java (menu + input + calls services)
-		service: business logic + validation + exceptions
-		repository: JDBC queries (CRUD, SQL)
-		model: entities + interface
-		exception: custom error types
-		utils: DB connection helper (DatabaseConnection)
-		
-
-B. OOP Design Documentation
-
-•Abstract Class and Subclasses (Inheritance)
-
-	Workouts share common fields such as id, name, durationMinutes, 
-	caloriesBurned, so the project uses a shared base design:
-		•Workout (base class)
-		•CardioWorkout extends Workout
-			•adds: distanceKm
-		•StrengthWorkout extends Workout
-			•adds: sets, reps
-			•also tracks exercises (count / list depending on your implementation)
+		•StrengthWorkout — workout with sets/reps
+		•Exercise — exercise attached to a workout
 			
-•Interfaces and Implemented Methods
-
-	The project includes:
+•Relationship:
 	
-	Validatable interface
+		•One Workout can have many Exercises (Workout 1 → * Exercise)
+		•Each Exercise references a Workout via workout_id (Foreign Key)
+B. Application Architecture (Layered Design)
+
+	•Controller	Handles user input and menu logic (Main.java)
+	•Service	Business logic, validation, error handling
+	•Repository	JDBC + SQL operations
+	•Model	Entities and OOP hierarchy
+	•Exception	Custom exception classes
+	•Utils	Database connection helper
 	
-	public interface Validatable {
-    	void validate();
-	}
+C. SOLID Principles Applied
+
+•S — Single Responsibility Principle
 	
-	Implemented by:
-		•Workout
-		•Exercise
-	Each class validates its own data, for example:
-		•duration must be in range 1..300
-		•calories must be positive
-		•distance must be positive
-		•sets/reps must be positive
-
-•Composition / Aggregation
-
-	The project uses composition:
-		Workout HAS-A Exercises
-	Meaning:
-		•Exercises belong to workouts
-		•A workout may contain multiple exercises
-		•Exercises are linked by workout_id
-
-•Polymorphism Examples
-
-	Polymorphism happens when the system stores different workout types as Workout:
-		List<Workout> workouts = workoutService.getAllWorkouts();
-
-	This list can contain both:
-		•CardioWorkout
-		•StrengthWorkout
+	Each class has one responsibility:
+		•Controller handles input
+		•Service handles logic
+		•Repository handles SQL
+		•Models store data
+		•Exceptions handle errors
+		
+•O — Open/Closed Principle
+	
+	•The system is extendable without modifying existing code.
+	•New workout types can be added via inheritance.
+	
+	
+•L — Liskov Substitution Principle
+	
+		•Subclasses can replace the base class:
+			List<Workout> workouts = workoutService.getAllWorkouts();
+			
+•I — Interface Segregation Principle
+	
+		public interface Validatable {
+  		  void validate();
+		}
+		
+		Classes implement only required behavior.
+		
+•D — Dependency Inversion Principle
+	
+		High-level logic does not depend directly on database details.
+		Controller → Service → Repository → DB
+		
 
 • UML diagram 
 
-<img width="671" height="754" alt="uml" src="https://github.com/user-attachments/assets/ca994bde-a8ec-4930-bf23-808c10957770" />
+<img width="671" height="754" alt="uml2 drawio" src="https://github.com/user-attachments/assets/c60e3bfe-a69e-4ea0-a4c5-70cbaab0f54b" />
 
+D. OOP Design Details
 
+	Inheritance
+		•Workout (base class)
+		•CardioWorkout extends Workout
+		•StrengthWorkout extends Workout
+	Composition
+		•Workout HAS-A Exercises.
+	Polymorphism
+		•Workouts are handled via base class references.
 		
-
-•C. Database Description
-
-	•Schema, Constraints, Foreign Keys
-	Database tables used:
-	Table: workouts
-	Stores general workout info
+E. Database Description
+	Tables
 	
-	Example columns:
-		•workout_id (PK)
-		•name (unique recommended)
-		•type (CARDIO / STRENGTH)
-		•duration_minutes
-		•calories_burned
-		•distance_km (only for cardio; can be NULL)
-		•sets, reps (only for strength; can be NULL)
+		•workouts
+		
+			•workout_id (PK)
+			•name
+			•type
+			•duration_minutes
+			•calories_burned
+			•distance_km (cardio only)
+			•sets, reps (strength only)
+			
+		•exercises
+		
+			•exercise_id (PK)
+			•workout_id (FK)
+			•name
+			•sets
+			•reps
+			
+		•Constraints
+		
+			•PKs for both tables
+			•FK from exercises → workouts
+			•Validation in service layer
+			
+		•Sample SQL
 		
 		
-	Table: exercises
-	Stores exercises linked to workouts.
-	Columns:
-		•exercise_id (PK)
-		•workout_id (FK → workouts.workout_id)
-		•name
-		•sets
-		•reps
-	Foreign key:
-		•exercises.workout_id references workouts(workout_id)
-		•If workout does not exist → FK error handled in service 
+			INSERT INTO workouts (name, type, duration_minutes, calories_burned, distance_km)
+			VALUES ('Morning Run', 'CARDIO', 30, 300, 5.0);
+			
+F. CRUD Operations
 		
+		CREATE	Add workouts and exercises
+		READ	List workouts
+		DELETE	Delete workout by ID
 		
-	•Sample SQL Inserts
+
+
+•G. Screenshots
+
+<img width="452" height="814" alt="docs:screenshots:01_structure" src="https://github.com/user-attachments/assets/3501b991-6bf3-4d62-b91d-756396d42955" />
+
+<img width="307" height="686" alt="docs:screenshots:02_db_tables" src="https://github.com/user-attachments/assets/8e182bf9-91ab-4cfe-80e4-f74852360f3f" />
+
+<img width="968" height="417" alt="docs:screenshots:03_run_menu" src="https://github.com/user-attachments/assets/d378caf4-69a9-45e2-99fe-f520e9f0bdaf" />
+
+<img width="458" height="341" alt="docs:screenshots:04_add_cardio" src="https://github.com/user-attachments/assets/3935c78f-72e9-4fb2-8f48-c2b664805e19" />
+
+<img width="572" height="418" alt="docs:screenshots:05_add_strength" src="https://github.com/user-attachments/assets/967a2e4b-a5c0-4714-a9f3-a4c51529fb79" />
+
+<img width="1578" height="774" alt="docs:screenshots:06_list_workouts" src="https://github.com/user-attachments/assets/64a3b813-8b47-4a6f-bbbf-05bbb50a6616" />
+
+<img width="487" height="312" alt="docs:screenshots:07_add_exercise" src="https://github.com/user-attachments/assets/c371bdbc-6c3d-4f03-abf0-84402412e904" />
+
+<img width="840" height="549" alt="docs:screenshots:08_delete_workout" src="https://github.com/user-attachments/assets/5fd22bd2-c5fd-4c9f-92c9-85b187dff80e" />
+
+
+H. How to Run
+
+
+•IntelliJ
 	
-		INSERT INTO workouts (name, type, duration_minutes, calories_burned, distance_km)
-		VALUES ('Morning Run', 'CARDIO', 30, 300, 5.0);
-
-		INSERT INTO workouts (name, type, duration_minutes, calories_burned, sets, reps)
-		VALUES ('Leg Day', 'STRENGTH', 45, 450, 4, 12);
-
-		INSERT INTO exercises (workout_id, name, sets, reps)
-		VALUES (2, 'Squats', 4, 10);
-		
-		
-		
-•D. Controller (CRUD Summary with Examples)
-
-	Controller: src/controller/Main.java
-	Menu:
-		•Add Cardio Workout
-		•Add Strength Workout
-		•List Workouts
-		•Add Exercise to Workout
-		•Delete Workout
-		•Exit
-	CRUD operations demonstrated:
-	CREATE
-		•Create cardio workout
-		•Create strength workout
-		•Create exercise (added to workout)
-	READ
-		•List all workouts
-	DELETE
-		•Delete workout by ID
-		
-		
-	Example requests/responses (console)
-	Create Cardio
-	Input:
-		•Name: run
-		•Duration: 20
-		•Calories: 200
-		•Distance: 2
-	Output:
-		•Cardio workout added 
-	Read workouts
-	Output example:
-		•[WORKOUT] 5: run | type=CARDIO | duration=20 | calories=200 | distanceKm=2.0
-	Add Exercise
-	Input:
-		•Workout ID: 6
-		•Exercise name: squats
-		•Sets: 4
-		•Reps: 10
-	Output:
-		•Exercise added
-	Delete
-	Input:
-		•Workout ID to delete: 6
-		•Output:
-		•Workout deleted
-
-
-•E. Instructions to Compile and Run 
-
-	Option 1: Run in IntelliJ IDEA
-		Open project in IntelliJ
-		Make sure PostgreSQL driver is connected (or in project libraries)
-		Set DB credentials in DatabaseConnection.java
-		Run: Main.java
-	Option 2: Compile + Run from Terminal
-		From project root:
-		
+		•Open project
+		•Add PostgreSQL driver
+		•Configure DB credentials in DatabaseConnection.java
+		•Run Main.java
+			
+•Terminal
+	
 		javac -cp ".:postgresql.jar" src/controller/Main.java
-		java  -cp ".:postgresql.jar" controller.Main
+		java -cp ".:postgresql.jar" controller.Main
+		
+
+ I. Reflection
+ 
+What I learned
+	
+		•Designing layered architecture
+		•Applying SOLID principles
+		•Implementing JDBC CRUD
+		•Using OOP patterns
+		•Creating UML diagrams
+		
+Challenges
+	
+		•Input validation
+		•Handling DB constraints
+		•Proper responsibility separation
+		
+Benefits
+	
+		•Clean architecture
+		•Easier maintenance
+		•Expandable system
 
 
-•F. Screenshots
 
-<img width="2316" height="1652" alt="Image 25 01 2026 at 19 20" src="https://github.com/user-attachments/assets/36b3c0db-1c54-46ad-b928-608d8bb14e42" />
-
-<img width="2646" height="1376" alt="Image 25 01 2026 at 19 28" src="https://github.com/user-attachments/assets/7d03b558-bb27-4a09-be06-48f2f453917e" />
-
-<img width="1878" height="640" alt="Image 25 01 2026 at 19 29" src="https://github.com/user-attachments/assets/5326d288-0472-457d-ac8f-ea9b80ae0295" />
-
-<img width="2224" height="604" alt="Image 25 01 2026 at 19 31" src="https://github.com/user-attachments/assets/a14aa6f0-be39-44ed-904e-06942f21628c" />
-
-<img width="1608" height="612" alt="Image 25 01 2026 at 19 32" src="https://github.com/user-attachments/assets/b555b9a4-d0c3-40e4-ba09-030353120aac" />
-
-<img width="2392" height="1102" alt="Image 25 01 2026 at 19 33" src="https://github.com/user-attachments/assets/3a0737bf-1f31-42a5-9d1b-96375600eb57" />
-
-•G. Reflection Section
-
-	  What I learned
-  	During this project I learned how to:
-		  •design a multi-layer Java application (controller/service/repository)
-		  •implement CRUD using JDBC and SQL
-		  •create and use custom exceptions for cleaner error handling
-		  •apply OOP concepts such as inheritance, interfaces, composition, and polymorphism
-	  	•build and explain UML diagrams for class relationships
-	Challenges faced
-	The main challenges were:
-	  	•handling invalid input from the user (Scanner input mismatch)
-		  •handling database errors (FK constraint, duplicates)
-		  •separating responsibilities correctly between service and repository layers
-	Benefits of JDBC and multi-layer design
-	JDBC makes the program realistic because data is stored persistently in a database.
-	Multi-layer architecture improves the design by:
-		  •keeping SQL logic inside repository
-		  •keeping validation and business rules inside service
-		  •keeping menu/input logic inside controller
-		  •This makes the code easier to maintain and expand.
+		
