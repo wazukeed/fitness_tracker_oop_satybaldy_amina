@@ -11,8 +11,7 @@ public abstract class Workout extends BaseEntity implements Validatable {
         this.caloriesBurned = caloriesBurned;
     }
 
-    // чтобы repository знал тип
-    public abstract String getWorkoutType(); // "CARDIO" / "STRENGTH"
+    public abstract String getWorkoutType(); 
 
     @Override
     public String getEntityType() {
