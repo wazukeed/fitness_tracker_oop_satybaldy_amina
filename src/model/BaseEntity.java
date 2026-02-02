@@ -9,11 +9,10 @@ public abstract class BaseEntity {
         setName(name);
     }
 
-    // abstract methods (минимум 2)
+
     public abstract String getEntityType();
     public abstract String describe();
 
-    // concrete method
     public String shortInfo() {
         return "[" + getEntityType() + "] " + id + ": " + name;
     }
