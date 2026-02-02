@@ -98,7 +98,6 @@ public class WorkoutRepositoryImpl implements WorkoutRepository {
 
     @Override
     public void delete(int id) {
-        // ensure exists
         findById(id);
 
         String sql = "DELETE FROM workouts WHERE id = ?";
@@ -120,7 +119,7 @@ public class WorkoutRepositoryImpl implements WorkoutRepository {
         int caloriesBurned = rs.getInt("calories_burned");
 
         if ("CARDIO".equalsIgnoreCase(type)) {
-            double distance = rs.getDouble("distance"); // ✅ правильное имя
+            double distance = rs.getDouble("distance"); 
             return new CardioWorkout(id, name, durationMinutes, caloriesBurned, distance);
         }
 
