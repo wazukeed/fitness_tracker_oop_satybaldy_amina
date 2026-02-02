@@ -7,7 +7,7 @@ public class StrengthWorkout extends Workout {
     private int totalSets;
     private int totalReps;
 
-    // композиция: тренировка содержит упражнения
+    
     private final List<Exercise> exercises = new ArrayList<>();
 
     public StrengthWorkout(int id, String name, int durationMinutes, int caloriesBurned, int totalSets, int totalReps) {
